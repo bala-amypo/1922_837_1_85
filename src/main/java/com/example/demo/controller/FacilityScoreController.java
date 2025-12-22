@@ -6,8 +6,7 @@ public class FacilityScoreController {
 
     @PostMapping("/{propertyId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> createOrUpdateScore(@PathVariable Long propertyId,
-                                                           @RequestBody FacilityScore score) {
+    public ResponseEntity<ApiResponse> createOrUpdateScore(@PathVariable Long propertyId,@RequestBody FacilityScore score) {
         FacilityScore saved = facilityScoreService.createOrUpdateScore(propertyId, score);
         return ResponseEntity.ok(new ApiResponse(true, "Facility score saved", saved));
     }

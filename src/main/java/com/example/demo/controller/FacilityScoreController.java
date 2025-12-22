@@ -19,8 +19,8 @@ public class FacilityScoreController {
         return ResponseEntity.ok(new ApiResponse(true, "Score retrieved", score));
     }
 
-    // DELETE
-    @DeleteMapping("/{propertyId}")
+
+    @DeleteMapping("/{propertyId}")    // DELETE
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteScore(@PathVariable Long propertyId) {
         facilityScoreService.deleteScore(propertyId);

@@ -4,9 +4,6 @@ public class FacilityScoreController {
 
     private final FacilityScoreService facilityScoreService;
 
-    // ... constructor ...
-
-    // CREATE or UPDATE (since only one per property)
     @PostMapping("/{propertyId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> createOrUpdateScore(@PathVariable Long propertyId,
@@ -15,8 +12,8 @@ public class FacilityScoreController {
         return ResponseEntity.ok(new ApiResponse(true, "Facility score saved", saved));
     }
 
-    // READ
-    @GetMapping("/{propertyId}")
+   
+    @GetMapping("/{propertyId}")//Used for reading
     public ResponseEntity<ApiResponse> getScore(@PathVariable Long propertyId) {
         FacilityScore score = facilityScoreService.getScoreByProperty(propertyId);
         return ResponseEntity.ok(new ApiResponse(true, "Score retrieved", score));

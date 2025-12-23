@@ -15,7 +15,7 @@ public class FacilityScoreController {
     }
 
     
-    @PostMapping("/{propertyId}")
+    @PostMapping("/{ }")
     public FacilityScore addScore(
             @PathVariable Long propertyId,
             @RequestBody FacilityScore score) {

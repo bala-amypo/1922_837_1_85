@@ -1,28 +1,30 @@
+package com.example.demo.controller;
+
+import com.example.demo.dto.ApiResponse;
+import com.example.demo.entity.FacilityScore;
+import com.example.demo.service.FacilityScoreService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/scores")
 public class FacilityScoreController {
 
     private final FacilityScoreService facilityScoreService;
 
+    public FacilityScoreController(FacilityScoreService facilityScoreService) {
+        this.facilityScoreService = facilityScoreService;
+    }
+
     @PostMapping("/{propertyId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> createOrUpdateScore(@PathVariable Long propertyId,@RequestBody FacilityScore score) {
-        FacilityScore saved = facilityScoreService.createOrUpdateScore(propertyId, score);
-        return ResponseEntity.ok(new ApiResponse(true, "Facility score saved", saved));
+    public ResponseEntity<ApiResponse> addScore(@PathVariable Long propertyId, @RequestBody FacilityScore score) {
+        FacilityScore saved = facilityScoreService.addScore(propertyId, score);
+        return ResponseEntity.ok(new ApiResponse(true, "FacilityScore added successfully", saved));
     }
 
-   
-    @GetMapping("/{propertyId}")//Used for reading
-    public ResponseEntity<ApiResponse> getScore(@PathVariable Long propertyId) {
+    @GetMapping("/{propertyId}")
+    public ResponseEntity<ApiResponse> getScoreByProperty(@PathVariable Long propertyId) {
         FacilityScore score = facilityScoreService.getScoreByProperty(propertyId);
-        return ResponseEntity.ok(new ApiResponse(true, "Score retrieved", score));
-    }
-
-
-    @DeleteMapping("/{propertyId}")    // DELETE
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteScore(@PathVariable Long propertyId) {
-        facilityScoreService.deleteScore(propertyId);
-        return ResponseEntity.ok(new ApiResponse(true, "Facility score deleted", null));
+        return ResponseEntity.ok(new ApiResponse(true, "FacilityScore retrieved successfully", score));
     }
 }

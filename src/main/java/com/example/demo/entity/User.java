@@ -1,45 +1,40 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "users")
+@Data
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password; // BCrypt hashed
+    private String password;
 
-    @Column(nullable = false)
-    private String role; // ADMIN or ANALYST
+    private String role;
 
-    // Many-to-Many relationship with Property (assigned properties)
     @ManyToMany
     @JoinTable(
-            name = "user_property_assignment",
+            name = "user_properties",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "property_id")
     )
-    private Set<Property> assignedProperties = new HashSet<>();
+    private List<Property> assignedProperties = new ArrayList<>();
 
-    // Constructor for registration (used by service layer)
+    public User() {
+    }
+
     public User(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;

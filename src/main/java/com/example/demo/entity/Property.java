@@ -1,49 +1,30 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import lombok.Data;
 
 @Entity
-@Table(name = "properties")
-@Data
 public class Property {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-
-    private String address;
-
+    private String name;
     private String city;
+    private double price;
+    private double areaSqFt;
 
-    private Double price;
+    public Property() {}
 
-    private Double areaSqFt;
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getCity() { return city; }
+    public double getPrice() { return price; }
+    public double getAreaSqFt() { return areaSqFt; }
 
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    private RatingResult ratingResult;
-
-    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RatingLog> ratingLogs = new ArrayList<>();
-
-    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
-    private FacilityScore facilityScore;
-
-    @ManyToMany(mappedBy = "assignedProperties")
-    private List<User> assignedUsers = new ArrayList<>();
-
-    public Property() {
-    }
-
-    public Property(String title, String address, String city, Double price, Double areaSqFt) {
-        this.title = title;
-        this.address = address;
-        this.city = city;
-        this.price = price;
-        this.areaSqFt = areaSqFt;
-    }
+    public void setId(Long id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setCity(String city) { this.city = city; }
+    public void setPrice(double price) { this.price = price; }
+    public void setAreaSqFt(double areaSqFt) { this.areaSqFt = areaSqFt; }
 }

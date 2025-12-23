@@ -3,65 +3,67 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.FacilityScore;
 import com.example.demo.entity.Property;
 import com.example.demo.entity.RatingResult;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FacilityScoreRepository;
 import com.example.demo.repository.PropertyRepository;
 import com.example.demo.repository.RatingResultRepository;
-import com.example.demo.service.RatingLogService;
 import com.example.demo.service.RatingService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RatingServiceImpl implements RatingService {
 
-    private final RatingResultRepository ratingResultRepository;
-    private final FacilityScoreRepository facilityScoreRepository;
     private final PropertyRepository propertyRepository;
-    private final RatingLogService ratingLogService;
+    private final FacilityScoreRepository facilityScoreRepository;
+    private final RatingResultRepository ratingResultRepository;
 
-    public RatingServiceImpl(RatingResultRepository ratingResultRepository,
+    public RatingServiceImpl(PropertyRepository propertyRepository,
                              FacilityScoreRepository facilityScoreRepository,
-                             PropertyRepository propertyRepository,
-                             RatingLogService ratingLogService) {
-        this.ratingResultRepository = ratingResultRepository;
-        this.facilityScoreRepository = facilityScoreRepository;
+                             RatingResultRepository ratingResultRepository) {
         this.propertyRepository = propertyRepository;
-        this.ratingLogService = ratingLogService;
+        this.facilityScoreRepository = facilityScoreRepository;
+        this.ratingResultRepository = ratingResultRepository;
     }
 
     @Override
     public RatingResult generateRating(Long propertyId) {
+
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + propertyId));
-        FacilityScore facilityScore = facilityScoreRepository.findByProperty(property)
-                .orElseThrow(() -> new BadRequestException("FacilityScore required to generate rating"));
-        double avgScore = (facilityScore.getSchoolProximity() + facilityScore.getHospitalProximity() +
-                facilityScore.getTransportAccess() + facilityScore.getSafetyScore()) / 4.0;
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Property not found"));
+
+        FacilityScore score = facilityScoreRepository.findByProperty(property)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Facility score not found"));
+
+        double avg = (score.getSchoolProximity()
+                + score.getHospitalProximity()
+                + score.getTransportAccess()
+                + score.getSafetyScore()) / 4.0;
+
         String category;
-        if (avgScore < 2.5) {
-            category = "POOR";
-        } else if (avgScore < 5) {
-            category = "AVERAGE";
-        } else if (avgScore < 7.5) {
-            category = "GOOD";
-        } else {
-            category = "EXCELLENT";
-        }
-        RatingResult ratingResult = new RatingResult();
-        ratingResult.setProperty(property);
-        ratingResult.setFinalRating(avgScore);
-        ratingResult.setRatingCategory(category);
-        RatingResult saved = ratingResultRepository.save(ratingResult);
-        ratingLogService.addLog(propertyId, "Rating generated: " + category + " with score " + avgScore);
-        return saved;
+        if (avg < 3) category = "POOR";
+        else if (avg < 6) category = "AVERAGE";
+        else if (avg < 8) category = "GOOD";
+        else category = "EXCELLENT";
+
+        RatingResult result = new RatingResult();
+        result.setProperty(property);
+        result.setFinalRating(avg);
+        result.setRatingCategory(category);
+
+        return ratingResultRepository.save(result);
     }
 
     @Override
     public RatingResult getRating(Long propertyId) {
+
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Property not found with id " + propertyId));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Property not found"));
+
         return ratingResultRepository.findByProperty(property)
-                .orElseThrow(() -> new ResourceNotFoundException("RatingResult not found for property " + propertyId));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Rating not found"));
     }
 }

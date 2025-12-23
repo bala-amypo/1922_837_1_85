@@ -9,4 +9,6 @@ public interface PropertyService {
     Property addProperty(Property property);
 
     List<Property> getAllProperties();
+
+    Property getPropertyById(Long id);
 }

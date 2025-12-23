@@ -8,5 +8,5 @@ public interface RatingLogService {
 
     RatingLog addLog(Long propertyId, String message);
 
-    List<RatingLog> getLogsByProperty(Long propertyId);
+    List<RatingLog> getLogs(Long propertyId);
 }

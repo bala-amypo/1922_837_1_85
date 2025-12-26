@@ -1,48 +1,62 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.FacilityScore;
 import com.example.demo.entity.Property;
-import com.example.demo.entity.RatingLog;
+import com.example.demo.entity.RatingResult;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FacilityScoreRepository;
 import com.example.demo.repository.PropertyRepository;
-import com.example.demo.repository.RatingLogRepository;
-import com.example.demo.service.RatingLogService;
+import com.example.demo.repository.RatingResultRepository;
+import com.example.demo.service.RatingService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class RatingLogServiceImpl implements RatingLogService {
+public class RatingServiceImpl implements RatingService {
 
-    private final RatingLogRepository ratingLogRepository;
     private final PropertyRepository propertyRepository;
+    private final FacilityScoreRepository facilityScoreRepository;
+    private final RatingResultRepository ratingResultRepository;
 
-    public RatingLogServiceImpl(RatingLogRepository ratingLogRepository,
-                                PropertyRepository propertyRepository) {
-        this.ratingLogRepository = ratingLogRepository;
+    public RatingServiceImpl(PropertyRepository propertyRepository,
+                             FacilityScoreRepository facilityScoreRepository,
+                             RatingResultRepository ratingResultRepository) {
         this.propertyRepository = propertyRepository;
+        this.facilityScoreRepository = facilityScoreRepository;
+        this.ratingResultRepository = ratingResultRepository;
     }
 
     @Override
-    public RatingLog addLog(Long propertyId, String message) {
-
+    public RatingResult generateRating(Long propertyId) {
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        RatingLog log = new RatingLog();
-        log.setProperty(property);
-        log.setMessage(message);
+        FacilityScore score = facilityScoreRepository.findByProperty(property)
+                .orElseThrow(() -> new ResourceNotFoundException("Facility score not found"));
 
-        return ratingLogRepository.save(log);
+        double average =
+                (score.getSchoolProximity()
+                + score.getHospitalProximity()
+                + score.getTransportAccess()
+                + score.getSafetyScore()) / 4.0;
+
+        RatingResult result = new RatingResult();
+        result.setProperty(property);
+        result.setFinalRating(average);
+
+        if (average >= 8) result.setRatingCategory("EXCELLENT");
+        else if (average >= 6) result.setRatingCategory("GOOD");
+        else if (average >= 4) result.setRatingCategory("AVERAGE");
+        else result.setRatingCategory("POOR");
+
+        return ratingResultRepository.save(result);
     }
 
     @Override
-    public List<RatingLog> getLogs(Long propertyId) {
-
+    public RatingResult getRating(Long propertyId) {
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
-        return ratingLogRepository.findByProperty(property);
+        return ratingResultRepository.findByProperty(property)
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found"));
     }
 }

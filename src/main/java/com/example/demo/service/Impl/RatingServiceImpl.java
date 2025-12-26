@@ -37,11 +37,11 @@ public class RatingServiceImpl implements RatingService {
         RatingResult result = new RatingResult();
         result.setProperty(property);
         result.setFinalRating(avg);
-
-        if (avg >= 8) result.setRatingCategory("EXCELLENT");
-        else if (avg >= 6) result.setRatingCategory("GOOD");
-        else if (avg >= 4) result.setRatingCategory("AVERAGE");
-        else result.setRatingCategory("POOR");
+        result.setRatingCategory(
+                avg >= 8 ? "EXCELLENT" :
+                avg >= 6 ? "GOOD" :
+                avg >= 4 ? "AVERAGE" : "POOR"
+        );
 
         return ratingResultRepository.save(result);
     }

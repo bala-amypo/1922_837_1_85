@@ -16,18 +16,14 @@ public class RatingLogController {
         this.ratingLogService = ratingLogService;
     }
 
-    
     @PostMapping("/{propertyId}")
-    public RatingLog addLog(
-            @PathVariable Long propertyId,
-            @RequestParam String message) {
-
+    public RatingLog addLog(@PathVariable Long propertyId,
+                            @RequestBody String message) {
         return ratingLogService.addLog(propertyId, message);
     }
 
-    
     @GetMapping("/{propertyId}")
     public List<RatingLog> getLogs(@PathVariable Long propertyId) {
-        return ratingLogService.getLogs(propertyId);
+        return ratingLogService.getLogsByProperty(propertyId);
     }
 }

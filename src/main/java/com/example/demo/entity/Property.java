@@ -1,30 +1,61 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.util.*;
 
 @Entity
+@Table(name = "properties")
 public class Property {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String title;
+    private String address;
     private String city;
-    private double price;
-    private double areaSqFt;
+    private Double price;
+    private Double areaSqFt;
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    private FacilityScore facilityScore;
+
+    @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
+    private RatingResult ratingResult;
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RatingLog> ratingLogs = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "assignedProperties")
+    private Set<User> assignedUsers = new HashSet<>();
 
     public Property() {}
 
+    // getters & setters
     public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getCity() { return city; }
-    public double getPrice() { return price; }
-    public double getAreaSqFt() { return areaSqFt; }
-
     public void setId(Long id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getCity() { return city; }
     public void setCity(String city) { this.city = city; }
-    public void setPrice(double price) { this.price = price; }
-    public void setAreaSqFt(double areaSqFt) { this.areaSqFt = areaSqFt; }
+
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
+
+    public Double getAreaSqFt() { return areaSqFt; }
+    public void setAreaSqFt(Double areaSqFt) { this.areaSqFt = areaSqFt; }
+
+    public FacilityScore getFacilityScore() { return facilityScore; }
+    public void setFacilityScore(FacilityScore facilityScore) { this.facilityScore = facilityScore; }
+
+    public RatingResult getRatingResult() { return ratingResult; }
+    public void setRatingResult(RatingResult ratingResult) { this.ratingResult = ratingResult; }
+
+    public List<RatingLog> getRatingLogs() { return ratingLogs; }
+    public void setRatingLogs(List<RatingLog> ratingLogs) { this.ratingLogs = ratingLogs; }
 }

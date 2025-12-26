@@ -27,7 +27,7 @@ public class RatingServiceImpl implements RatingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         FacilityScore score = facilityScoreRepository.findByProperty(property)
-                .orElseThrow(() -> new ResourceNotFoundException("Facility score missing"));
+                .orElseThrow(() -> new ResourceNotFoundException("Facility score not found"));
 
         double avg = (score.getSchoolProximity()
                 + score.getHospitalProximity()

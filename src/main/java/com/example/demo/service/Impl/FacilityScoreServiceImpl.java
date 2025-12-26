@@ -23,13 +23,11 @@ public class FacilityScoreServiceImpl implements FacilityScoreService {
 
     @Override
     public FacilityScore addScore(Long propertyId, FacilityScore score) {
-
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Property not found with id: " + propertyId));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         if (facilityScoreRepository.findByProperty(property).isPresent()) {
-            throw new BadRequestException("Facility score already exists for this property");
+            throw new BadRequestException("Facility score already exists");
         }
 
         score.setProperty(property);
@@ -38,13 +36,9 @@ public class FacilityScoreServiceImpl implements FacilityScoreService {
 
     @Override
     public FacilityScore getScoreByProperty(Long propertyId) {
-
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Property not found with id: " + propertyId));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
         return facilityScoreRepository.findByProperty(property)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Facility score not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Score not found"));
     }
 }

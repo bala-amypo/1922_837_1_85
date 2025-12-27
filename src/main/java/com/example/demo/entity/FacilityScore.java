@@ -13,39 +13,79 @@ public class FacilityScore {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "property_id", unique = true)
+    @JoinColumn(name = "property_id", nullable = false, unique = true)
     private Property property;
 
-    @Min(0) @Max(10)
+    @Min(0)
+    @Max(10)
     private Integer schoolProximity;
 
-    @Min(0) @Max(10)
+    @Min(0)
+    @Max(10)
     private Integer hospitalProximity;
 
-    @Min(0) @Max(10)
+    @Min(0)
+    @Max(10)
     private Integer transportAccess;
 
-    @Min(0) @Max(10)
+    @Min(0)
+    @Max(10)
     private Integer safetyScore;
 
-    public FacilityScore() {}
+    public FacilityScore() {
+    }
 
-    // getters & setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public FacilityScore(Property property, Integer schoolProximity,
+                         Integer hospitalProximity, Integer transportAccess,
+                         Integer safetyScore) {
+        this.property = property;
+        this.schoolProximity = schoolProximity;
+        this.hospitalProximity = hospitalProximity;
+        this.transportAccess = transportAccess;
+        this.safetyScore = safetyScore;
+    }
 
-    public Property getProperty() { return property; }
-    public void setProperty(Property property) { this.property = property; }
+    public Long getId() {
+        return id;
+    }
 
-    public Integer getSchoolProximity() { return schoolProximity; }
-    public void setSchoolProximity(Integer schoolProximity) { this.schoolProximity = schoolProximity; }
+    public Property getProperty() {
+        return property;
+    }
 
-    public Integer getHospitalProximity() { return hospitalProximity; }
-    public void setHospitalProximity(Integer hospitalProximity) { this.hospitalProximity = hospitalProximity; }
+    public void setProperty(Property property) {
+        this.property = property;
+    }
 
-    public Integer getTransportAccess() { return transportAccess; }
-    public void setTransportAccess(Integer transportAccess) { this.transportAccess = transportAccess; }
+    public Integer getSchoolProximity() {
+        return schoolProximity;
+    }
 
-    public Integer getSafetyScore() { return safetyScore; }
-    public void setSafetyScore(Integer safetyScore) { this.safetyScore = safetyScore; }
+    public void setSchoolProximity(Integer schoolProximity) {
+        this.schoolProximity = schoolProximity;
+    }
+
+    public Integer getHospitalProximity() {
+        return hospitalProximity;
+    }
+
+    public void setHospitalProximity(Integer hospitalProximity) {
+        this.hospitalProximity = hospitalProximity;
+    }
+
+    public Integer getTransportAccess() {
+        return transportAccess;
+    }
+
+    public void setTransportAccess(Integer transportAccess) {
+        this.transportAccess = transportAccess;
+    }
+
+    public Integer getSafetyScore() {
+        return safetyScore;
+    }
+
+    public void setSafetyScore(Integer safetyScore) {
+        this.safetyScore = safetyScore;
+    }
 }

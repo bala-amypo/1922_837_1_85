@@ -1,44 +1,70 @@
 package com.example.demo.security;
 
+import com.example.demo.entity.User;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    private final String SECRET = "secret-key-123";
-    private final long EXPIRATION = 86400000;
+    @Value("${jwt.secret:ThisIsASecretKeyForJwtToken123456789}")
+    private String jwtSecret;
 
-    public String generateToken(Authentication auth, com.example.demo.entity.User user) {
+    @Value("${jwt.expiration:86400000}")
+    private long jwtExpiration;
+
+    private Key getKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
+    public String generateToken(Authentication authentication, User user) {
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + jwtExpiration);
+
         return Jwts.builder()
-                .setSubject(user.getEmail())
+                .setSubject(authentication.getName())
                 .claim("userId", user.getId())
                 .claim("role", user.getRole())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(SECRET)
-                .parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public Long getUserIdFromToken(String token) {
-        return ((Number) Jwts.parser().setSigningKey(SECRET)
-                .parseClaimsJws(token).getBody().get("userId")).longValue();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(getKey())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException e) {
             return false;
         }
+    }
+
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+    
+    public Long getUserIdFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", Long.class);
     }
 }

@@ -19,9 +19,15 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public Property addProperty(Property property) {
-        if (property.getPrice() < 0 || property.getAreaSqFt() < 100) {
-            throw new BadRequestException("Invalid property data");
+
+        if (property.getPrice() < 0) {
+            throw new BadRequestException("Price must be greater than or equal to 0");
         }
+
+        if (property.getAreaSqFt() < 100) {
+            throw new BadRequestException("Area must be at least 100 sq ft");
+        }
+
         return propertyRepository.save(property);
     }
 
